@@ -9,6 +9,14 @@ class GetProductListEvent extends ProductEvent {
   List<Object> get props => [];
 }
 
+class GetProductDetailEvent extends ProductEvent {
+  final int? id;
+  const GetProductDetailEvent(this.id);
+
+  @override
+  List<Object> get props => [];
+}
+
 class RegisterProductEvent extends ProductEvent {
   final ProductModel? productModel;
   final File? image;
@@ -30,7 +38,9 @@ class RegisterProductEvent extends ProductEvent {
 class UpdateProductEvent extends ProductEvent {
   final ProductModel productModel;
   final File image;
-  const UpdateProductEvent(this.productModel, this.image);
+  final int id;
+
+  const UpdateProductEvent(this.productModel, this.image, this.id);
 
   @override
   List<Object> get props => [productModel];

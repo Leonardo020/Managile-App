@@ -33,6 +33,12 @@ class _NavigatorHomeState extends State<NavigatorHome> {
         'screen': AppRoutes.HOME,
       },
       {
+        'title': 'Categorias',
+        'icon': FontAwesomeIcons.buffer,
+        'iconColor': Colors.black,
+        'screen': AppRoutes.HOME,
+      },
+      {
         'title': 'Configurações',
         'icon': FontAwesomeIcons.user,
         'iconColor': Colors.black,

@@ -21,6 +21,20 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       }
     });
 
+    on<GetProductDetailEvent>((event, emit) async {
+      try {
+        if (event.id == null) {
+          emit(ProductSingleLoaded(ProductModel()));
+        } else {
+          emit(ProductLoading());
+          var product = await _apiRepository.fetchDetailProduct(event.id!);
+          emit(ProductSingleLoaded(product));
+        }
+      } catch (msg) {
+        emit(ProductError("Erro ao carregar produtos: $msg"));
+      }
+    });
+
     on<RegisterProductEvent>((event, emit) async {
       try {
         emit(ProductLoading());
@@ -43,7 +57,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<DeleteProductEvent>((event, emit) async {
       try {
-        final products = (state as ProductLoaded).productModel;
+        final products = (state as ProductLoaded).productsModel;
         if (state is ProductLoaded) {
           emit(ProductLoading());
           await _apiRepository
@@ -58,57 +72,4 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       }
     });
   }
-
-  // Future<void> _mapProductAddedToState(
-  //     RegisterProductEvent event, Emitter<ProductState> emit) async {
-  //   try {
-  //     if (state is ProductLoaded) {
-  //       var newProduct =
-  //           (await _apiRepository.createProduct(event.productModel));
-  //       List<ProductModel> updatedProducts;
-  //       if (newProduct != null) {
-  //         updatedProducts = List.from((state as ProductLoaded).productModel)
-  //           ..add(newProduct);
-
-  //         emit(ProductLoaded(updatedProducts.reversed.toList()));
-  //       }
-  //     }
-  //   } catch (_) {
-  //     emit(ProductError("error Add Product"));
-  //   }
-  // }
-
-  // Future<void> _mapProductUpdatedToState(
-  //     UpdateProductEvent event, Emitter<ProductState> emit) async {
-  //   try {
-  //     if (state is ProductLoaded) {
-  //       // var updatedProduct = (await _apiRepository.updateProduct(event.productModel));
-  //       // if (updatedProduct != null) {
-  //       //   final List<ProductModel> updatedProducts =
-  //       //       (state as ProductLoaded).productModel.map((productModel) {
-  //       //     return productModel.id == updatedProduct.id ? updatedProduct : productModel;
-  //       //   }).toList();
-
-  //       //   yield ProductLoaded(updatedProducts);
-  //       // }
-  //     }
-  //   } catch (_) {
-  //     emit(ProductError("error update productModel"));
-  //   }
-  // }
-
-  // Future<void> _mapProductDeletedToState(
-  //     DeleteProductEvent event, Emitter<ProductState> emit) async {
-  //   try {
-  //     if (state is ProductLoaded) {
-  //       final deletelbum = (state as ProductLoaded)
-  //           .productModel
-  //           .where((productModel) => productModel.id != event.productModel.id)
-  //           .toList();
-  //       emit(ProductLoaded(deletelbum));
-  //     }
-  //   } catch (_) {
-  //     emit(ProductError("error delete productModel"));
-  //   }
-  // }
 }

@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:mylife/models/product.dart';
 import 'package:mylife/models/dev.dart';
 
@@ -39,6 +38,17 @@ class ApiProvider {
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
 
+      throw Exception(error);
+    }
+  }
+
+  Future<ProductModel> fetchDetailProduct(int id) async {
+    try {
+      Response response = await _dio.get(_url + '/product/$id');
+      ProductModel product = ProductModel.fromJson(response.data);
+      return product;
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);
     }
   }

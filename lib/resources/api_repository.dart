@@ -18,6 +18,10 @@ class ApiRepository {
     return await _provider.fetchProductList();
   }
 
+  Future<ProductModel> fetchDetailProduct(int id) async {
+    return await _provider.fetchDetailProduct(id);
+  }
+
   Future<ProductModel?> createProduct(ProductModel model) async {
     return await _provider.createProduct(model);
   }

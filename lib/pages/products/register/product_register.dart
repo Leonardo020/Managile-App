@@ -14,12 +14,14 @@ import 'package:mylife/routes/app_routes.dart';
 enum FieldError { Empty, Invalid }
 
 class ProductRegisterScreen extends StatefulWidget {
+  final int? id;
   @override
   State<ProductRegisterScreen> createState() => _ProductRegisterScreenState();
-  const ProductRegisterScreen({Key? key}) : super(key: key);
+  const ProductRegisterScreen({Key? key, this.id}) : super(key: key);
 }
 
 class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
+  late ProductBloc _product;
   var _image;
   final picker = ImagePicker();
   final _titleController = TextEditingController();
@@ -32,15 +34,26 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
 
   @override
   void initState() {
+    _product = ProductBloc();
+    _product.add(GetProductDetailEvent(widget.id));
     super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _titleController.dispose();
+    _quantityController.dispose();
     focusPrice.dispose();
     focusQuantity.dispose();
+    _product.close();
+    super.dispose();
+  }
+
+  populateForm(ProductState state) {
+    final product = (state as ProductSingleLoaded).productModel;
+    _titleController.text = product.title ?? '';
+    _quantityController.text =
+        product.quantity != null ? product.quantity.toString() : '';
   }
 
   addImageGallery() async {
@@ -52,8 +65,8 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
     });
   }
 
-  saveProduct(context) {
-    BlocProvider.of<ProductBloc>(context).add(RegisterProductEvent(
+  saveProduct() {
+    _product.add(RegisterProductEvent(
         ProductModel(
             title: _titleController.text,
             price: double.parse(formatter.getUnformattedValue().toString()),
@@ -61,14 +74,27 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
         _image));
   }
 
+  updateProduct(ProductState state) {
+    final product = (state as ProductSingleLoaded).productModel;
+    _product.add(UpdateProductEvent(
+        ProductModel(
+            title: product.title,
+            price: double.parse(formatter.getUnformattedValue().toString()),
+            quantity: int.parse(_quantityController.text)),
+        _image,
+        widget.id!));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
-          title: 'Cadastro de Produtos', save: () => saveProduct(context)),
+          title: widget.id != null
+              ? 'Detalhes do Produto'
+              : 'Cadastro de Produtos'),
       body: BlocProvider(
-        create: (BuildContext context) => ProductBloc(),
+        create: (BuildContext context) => _product,
         child: BlocListener<ProductBloc, ProductState>(
           listener: (context, state) {
             if (state is ProductError) {
@@ -80,138 +106,28 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   AppRoutes.PRODUCTS, ModalRoute.withName(AppRoutes.HOME));
             }
+
+            if (state is ProductSingleLoaded) {
+              populateForm(state);
+            }
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30),
             child: Center(
               child: BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const SizedBox(height: 20),
-                      InkWell(
-                        onTap: () => addImageGallery(),
-                        child: _image != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: Image.file(
-                                  _image,
-                                  height: 250,
-                                  width: 300,
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              )
-                            : Container(
-                                height: 250,
-                                width: 300,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 1.0,
-                                        color: Colors.grey,
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        controller: _titleController,
-                        style: const TextStyle(
-                          color: Colors.black,
-                        ),
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          hintText: 'Título',
-                          labelStyle: const TextStyle(
-                            color: Colors.black,
-                          ),
-                          hintStyle: const TextStyle(
-                            color: Colors.black,
-                          ),
-                          enabledBorder: _renderBorder(state),
-                          focusedBorder: _renderBorder(state),
-                        ),
-                        onSubmitted: (_) => focusPrice.requestFocus(),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: TextField(
-                              style: const TextStyle(
-                                color: Colors.black,
-                              ),
-                              inputFormatters: <TextInputFormatter>[formatter],
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                hintText: 'Preço',
-                                labelStyle: const TextStyle(
-                                  color: Colors.black,
-                                ),
-                                hintStyle: const TextStyle(
-                                  color: Colors.black,
-                                ),
-                                enabledBorder: _renderBorder(state),
-                                focusedBorder: _renderBorder(state),
-                              ),
-                              keyboardType: TextInputType.number,
-                              focusNode: focusPrice,
-                              onSubmitted: (_) => focusQuantity.requestFocus(),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Flexible(
-                            child: TextField(
-                              controller: _quantityController,
-                              style: const TextStyle(
-                                color: Colors.black,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Quantidade',
-                                labelStyle: const TextStyle(
-                                  color: Colors.black,
-                                ),
-                                hintStyle: const TextStyle(
-                                  color: Colors.black,
-                                ),
-                                enabledBorder: _renderBorder(state),
-                                focusedBorder: _renderBorder(state),
-                              ),
-                              focusNode: focusQuantity,
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                              const EdgeInsets.all(15)),
-                        ),
-                        child: state is ProductLoading
-                            ? Row(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text('Cadastrando'),
-                                  SizedBox(width: 15),
-                                  SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              )
-                            : const Text('Cadastrar',
-                                style: TextStyle(fontSize: 26)),
-                        onPressed: () => saveProduct(context),
-                      ),
-                    ]);
+                if (state is ProductLoading && widget.id != null) {
+                  return const CircularProgressIndicator();
+                }
+                // String? pathImage = widget.id != null
+                //     ? 'https://drive.google.com/uc?export=view&id=${state.productModel.urlImage}'
+                //     : null;
+                // _image = pathImage != null
+                //     ? urlToFile(pathImage).then((value) => value)
+                //     : null;
+                else {
+                  return _buildForm(state);
+                }
               }),
             ),
           ),
@@ -220,8 +136,141 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
     );
   }
 
-  OutlineInputBorder _renderBorder(ProductState state) =>
-      const OutlineInputBorder(
+  Widget _buildForm(ProductState state) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const SizedBox(height: 20),
+          InkWell(
+            onTap: () => addImageGallery(),
+            child: _image != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Image.file(
+                      _image,
+                      height: 250,
+                      width: 300,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  )
+                : Container(
+                    height: 250,
+                    width: 300,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 1.0,
+                            color: Colors.grey,
+                            style: BorderStyle.solid),
+                        borderRadius: BorderRadius.circular(50)),
+                  ),
+          ),
+          const SizedBox(height: 20),
+          TextField(
+            controller: _titleController,
+            style: const TextStyle(
+              color: Colors.black,
+            ),
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              hintText: 'Título',
+              labelStyle: const TextStyle(
+                color: Colors.black,
+              ),
+              hintStyle: const TextStyle(
+                color: Colors.black,
+              ),
+              enabledBorder: _renderBorder(),
+              focusedBorder: _renderBorder(),
+            ),
+            onSubmitted: (_) => focusPrice.requestFocus(),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: TextField(
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
+                  controller: TextEditingController(
+                      text: state is ProductSingleLoaded
+                          ? formatter.format(
+                              state.productModel.price!.toStringAsFixed(2))
+                          : null),
+                  inputFormatters: <TextInputFormatter>[formatter],
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    hintText: 'Preço',
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: _renderBorder(),
+                    focusedBorder: _renderBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  focusNode: focusPrice,
+                  onSubmitted: (_) => focusQuantity.requestFocus(),
+                ),
+              ),
+              const SizedBox(width: 20),
+              Flexible(
+                child: TextField(
+                  controller: _quantityController,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Quantidade',
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    hintStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: _renderBorder(),
+                    focusedBorder: _renderBorder(),
+                  ),
+                  focusNode: focusQuantity,
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(
+                  const EdgeInsets.all(15)),
+            ),
+            child: state is ProductLoading && widget.id == null
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text('Cadastrando'),
+                      SizedBox(width: 15),
+                      SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                    ],
+                  )
+                : widget.id == null
+                    ? const Text('Cadastrar', style: TextStyle(fontSize: 26))
+                    : const Text('Atualizar', style: TextStyle(fontSize: 26)),
+            onPressed: () => saveProduct(),
+          ),
+        ]);
+  }
+
+  OutlineInputBorder _renderBorder() => const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(20)),
         borderSide: BorderSide(color: Colors.grey, width: 1),
       );

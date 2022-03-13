@@ -14,9 +14,18 @@ class ProductLoading extends ProductState {
 }
 
 class ProductLoaded extends ProductState {
-  final List<ProductModel> productModel;
+  final List<ProductModel> productsModel;
 
-  ProductLoaded(this.productModel);
+  ProductLoaded(this.productsModel);
+
+  @override
+  List<Object> get props => [productsModel];
+}
+
+class ProductSingleLoaded extends ProductState {
+  final ProductModel productModel;
+
+  ProductSingleLoaded(this.productModel);
 
   @override
   List<Object> get props => [productModel];
@@ -29,14 +38,3 @@ class ProductError extends ProductState {
   @override
   List<Object> get props => [message];
 }
-
-// class ProductRegisterState extends ProductState {
-//   final bool isBusy;
-//   final FieldError? titleError;
-//   final bool submissionSuccess;
-//   ProductRegisterState({
-//     this.isBusy = false,
-//     this.titleError,
-//     this.submissionSuccess = false,
-//   });
-// }
