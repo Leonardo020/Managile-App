@@ -37,19 +37,37 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
     on<RegisterProductEvent>((event, emit) async {
       try {
-        emit(ProductLoading());
-        ProductModel? product =
+        emit(ProductProcessLoading());
+        ProductModel product =
             await _apiRepository.createProduct(event.productModel!);
 
         if (event.image != null) {
-          await _apiRepository.addImageProduct(
-              event.image!, int.parse(product!.id.toString()));
+          await _apiRepository.addImageProduct(event.image!, product.id!);
         }
 
-        if (product != null) {
-          var products = await _apiRepository.fetchProductList();
-          emit(ProductLoaded(products));
+        var products = await _apiRepository.fetchProductList();
+        emit(ProductLoaded(products));
+      } catch (msg) {
+        emit(ProductError('Erro ao cadastrar produto: $msg'));
+      }
+    });
+
+    on<UpdateProductEvent>((event, emit) async {
+      try {
+        emit(ProductProcessLoading());
+
+        await _apiRepository.updateProduct(event.productModel, event.id);
+
+        if (event.image != null) {
+          await _apiRepository.addImageProduct(event.image!, event.id);
         }
+
+        // else if(event.image!.path == ''){
+        //   await _apiRepository.removeImageProduct(event.id);
+        // }
+
+        var products = await _apiRepository.fetchProductList();
+        emit(ProductLoaded(products));
       } catch (msg) {
         emit(ProductError('Erro ao cadastrar produto: $msg'));
       }

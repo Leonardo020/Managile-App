@@ -37,7 +37,7 @@ class RegisterProductEvent extends ProductEvent {
 
 class UpdateProductEvent extends ProductEvent {
   final ProductModel productModel;
-  final File image;
+  final File? image;
   final int id;
 
   const UpdateProductEvent(this.productModel, this.image, this.id);

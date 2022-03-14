@@ -1,22 +1,18 @@
+import 'dart:developer';
+
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'dart:math';
 
-Future<File> urlToFile(String imageUrl) async {
-// generate random number.
-  var rng = Random();
-// get temporary directory of device.
-  Directory tempDir = await getTemporaryDirectory();
-// get temporary path from temporary directory.
-  String tempPath = tempDir.path;
-// create a new file in temporary path with random file name.
-  File file = File(tempPath + (rng.nextInt(100)).toString() + '.png');
-// call http.get method and pass imageUrl into it to get response.
-  http.Response response = await http.get(Uri(path: imageUrl));
-// write bodyBytes received in response to file.
-  await file.writeAsBytes(response.bodyBytes);
-// now return the file which is created with random name in
-// temporary directory and image bytes from response is written to // that file.
+Future<File> fileFromImageUrl(String pathImage) async {
+  Uri url = Uri.parse('https://drive.google.com/uc?export=view&id=$pathImage');
+  final response = await http.get(url);
+
+  final documentDirectory = await getApplicationDocumentsDirectory();
+
+  final file = File(join(documentDirectory.path, '$pathImage.png'));
+
+  file.writeAsBytesSync(response.bodyBytes);
   return file;
 }

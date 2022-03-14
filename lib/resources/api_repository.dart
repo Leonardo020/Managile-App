@@ -22,18 +22,22 @@ class ApiRepository {
     return await _provider.fetchDetailProduct(id);
   }
 
-  Future<ProductModel?> createProduct(ProductModel model) async {
+  Future<ProductModel> createProduct(ProductModel model) async {
     return await _provider.createProduct(model);
+  }
+
+  Future<void> updateProduct(ProductModel model, int id) async {
+    await _provider.updateProduct(model, id);
+  }
+
+  Future<void> deleteProduct(int id) {
+    return _provider.deleteProduct(id);
   }
 
   Future<void> addImageProduct(File image, int id) async {
     FormData formData = FormData.fromMap(
         {"urlImage": await MultipartFile.fromFile(image.path)});
     await _provider.addImageProduct(formData, id);
-  }
-
-  Future<void> deleteProduct(int id) {
-    return _provider.deleteProduct(id);
   }
 }
 

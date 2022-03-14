@@ -65,12 +65,9 @@ class ApiProvider {
     }
   }
 
-  Future<void> addImageProduct(FormData formData, int id) async {
+  Future<void> updateProduct(ProductModel model, int id) async {
     try {
-      await _dio.post(
-        _url + '/product/addImage/$id',
-        data: formData,
-      );
+      await _dio.put(_url + '/product/update/$id', data: model.toJson());
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);
@@ -79,7 +76,19 @@ class ApiProvider {
 
   Future<void> deleteProduct(id) async {
     try {
-      Response response = await _dio.delete(_url + '/product/delete/$id');
+      await _dio.delete(_url + '/product/delete/$id');
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      throw Exception(error);
+    }
+  }
+
+  Future<void> addImageProduct(FormData formData, int id) async {
+    try {
+      await _dio.post(
+        _url + '/product/addImage/$id',
+        data: formData,
+      );
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);

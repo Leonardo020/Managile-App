@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mylife/blocs/product/product_bloc.dart';
 import 'package:mylife/components/custom_app_bar.dart';
 import 'package:mylife/models/product.dart';
+import 'package:mylife/resources/utils/img_url_to_file.dart';
 import 'package:mylife/routes/app_routes.dart';
 
 enum FieldError { Empty, Invalid }
@@ -22,12 +23,15 @@ class ProductRegisterScreen extends StatefulWidget {
 
 class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
   late ProductBloc _product;
-  var _image;
+  File? newImage;
+  File? oldImage;
   final picker = ImagePicker();
   final _titleController = TextEditingController();
+  final _priceController = TextEditingController();
   final _quantityController = TextEditingController();
   final CurrencyTextInputFormatter formatter =
       CurrencyTextInputFormatter(locale: 'pt-br', symbol: 'R\$');
+  bool imageLoading = false;
 
   FocusNode focusPrice = FocusNode();
   FocusNode focusQuantity = FocusNode();
@@ -49,11 +53,26 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
     super.dispose();
   }
 
-  populateForm(ProductState state) {
+  populateForm(ProductState state) async {
+    setState(() {
+      imageLoading = true;
+    });
+
     final product = (state as ProductSingleLoaded).productModel;
     _titleController.text = product.title ?? '';
     _quantityController.text =
         product.quantity != null ? product.quantity.toString() : '';
+    _priceController.text = state.productModel.price != null
+        ? formatter.format(state.productModel.price!.toStringAsFixed(2))
+        : '';
+    oldImage = product.urlImage == '' || product.urlImage == null
+        ? null
+        : await fileFromImageUrl(product.urlImage!);
+
+    setState(() {
+      newImage = oldImage;
+      imageLoading = false;
+    });
   }
 
   addImageGallery() async {
@@ -61,7 +80,7 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
-      _image = File(pickedFile!.path);
+      newImage = File(pickedFile!.path);
     });
   }
 
@@ -71,18 +90,24 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
             title: _titleController.text,
             price: double.parse(formatter.getUnformattedValue().toString()),
             quantity: int.parse(_quantityController.text)),
-        _image));
+        newImage));
   }
 
-  updateProduct(ProductState state) {
-    final product = (state as ProductSingleLoaded).productModel;
+  updateProduct() {
+    if (oldImage != null) {
+      if (oldImage!.path == newImage!.path) {
+        newImage = null;
+      }
+    }
+
     _product.add(UpdateProductEvent(
-        ProductModel(
-            title: product.title,
-            price: double.parse(formatter.getUnformattedValue().toString()),
-            quantity: int.parse(_quantityController.text)),
-        _image,
-        widget.id!));
+      ProductModel(
+          title: _titleController.text,
+          price: double.parse(formatter.getUnformattedValue().toString()),
+          quantity: int.parse(_quantityController.text)),
+      newImage,
+      widget.id!,
+    ));
   }
 
   @override
@@ -96,7 +121,7 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
       body: BlocProvider(
         create: (BuildContext context) => _product,
         child: BlocListener<ProductBloc, ProductState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is ProductError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -108,7 +133,7 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
             }
 
             if (state is ProductSingleLoaded) {
-              populateForm(state);
+              await populateForm(state);
             }
           },
           child: Padding(
@@ -118,14 +143,9 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
                   builder: (context, state) {
                 if (state is ProductLoading && widget.id != null) {
                   return const CircularProgressIndicator();
-                }
-                // String? pathImage = widget.id != null
-                //     ? 'https://drive.google.com/uc?export=view&id=${state.productModel.urlImage}'
-                //     : null;
-                // _image = pathImage != null
-                //     ? urlToFile(pathImage).then((value) => value)
-                //     : null;
-                else {
+                } else if (state is ProductSingleLoaded) {
+                  return _buildForm(state);
+                } else {
                   return _buildForm(state);
                 }
               }),
@@ -143,28 +163,23 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
         children: <Widget>[
           const SizedBox(height: 20),
           InkWell(
-            onTap: () => addImageGallery(),
-            child: _image != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: Image.file(
-                      _image,
-                      height: 250,
-                      width: 300,
-                      fit: BoxFit.fitWidth,
-                    ),
-                  )
-                : Container(
-                    height: 250,
-                    width: 300,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 1.0,
-                            color: Colors.grey,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(50)),
-                  ),
-          ),
+              onTap: () => addImageGallery(),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: imageLoading
+                    ? Image.asset('assets/gif/snap-load2.gif',
+                        fit: BoxFit.fitHeight, height: 300)
+                    : !imageLoading && newImage != null
+                        ? Image.file(
+                            newImage!,
+                            height: 300,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.network(
+                            'https://iseb3.com.br/assets/camaleon_cms/image-not-found-4a963b95bf081c3ea02923dceaeb3f8085e1a654fc54840aac61a57a60903fef.png',
+                            height: 300,
+                            fit: BoxFit.cover),
+              )),
           const SizedBox(height: 20),
           TextField(
             controller: _titleController,
@@ -194,11 +209,7 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
                   style: const TextStyle(
                     color: Colors.black,
                   ),
-                  controller: TextEditingController(
-                      text: state is ProductSingleLoaded
-                          ? formatter.format(
-                              state.productModel.price!.toStringAsFixed(2))
-                          : null),
+                  controller: _priceController,
                   inputFormatters: <TextInputFormatter>[formatter],
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -247,15 +258,15 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
               padding: MaterialStateProperty.all<EdgeInsets>(
                   const EdgeInsets.all(15)),
             ),
-            child: state is ProductLoading && widget.id == null
+            child: state is ProductProcessLoading
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text('Cadastrando'),
-                      SizedBox(width: 15),
-                      SizedBox(
+                    children: [
+                      Text(widget.id == null ? 'Cadastrando' : 'Atualizando'),
+                      const SizedBox(width: 15),
+                      const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(color: Colors.white),
@@ -265,7 +276,8 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
                 : widget.id == null
                     ? const Text('Cadastrar', style: TextStyle(fontSize: 26))
                     : const Text('Atualizar', style: TextStyle(fontSize: 26)),
-            onPressed: () => saveProduct(),
+            onPressed: () =>
+                widget.id == null ? saveProduct() : updateProduct(),
           ),
         ]);
   }
