@@ -46,6 +46,7 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
   @override
   void dispose() {
     _titleController.dispose();
+    _priceController.dispose();
     _quantityController.dispose();
     focusPrice.dispose();
     focusQuantity.dispose();
