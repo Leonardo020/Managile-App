@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylife/blocs/dev/dev_bloc.dart';
 import 'package:mylife/components/custom_app_bar.dart';
+import 'package:mylife/components/custom_tooltip.dart';
 import 'package:mylife/models/dev.dart';
 
 class DevScreen extends StatefulWidget {
@@ -15,10 +16,34 @@ class DevScreen extends StatefulWidget {
 class _DevScreenState extends State<DevScreen> {
   late DevBloc _devsBloc;
 
+  List<Map<String, dynamic>> _roles = [];
+
   @override
   void initState() {
     _devsBloc = DevBloc();
     _devsBloc.add(GetDevList());
+    _roles = [
+      {
+        "id": 0,
+        "img": "assets/icons/backend.jpg",
+        "title": "Dev Back-End",
+        "techs": [
+          "assets/icons/laravel.png",
+          "assets/icons/flutter.webp",
+          "assets/icons/database.png"
+        ]
+      },
+      {
+        "id": 1,
+        "img": "assets/icons/frontend.jpg",
+        "title": "Dev Front-End",
+        "techs": [
+          "assets/icons/vue.webp",
+          "assets/icons/figma.png",
+          "assets/icons/bootstrap.png"
+        ]
+      }
+    ];
 
     super.initState();
   }
@@ -51,7 +76,7 @@ class _DevScreenState extends State<DevScreen> {
                 } else if (state is DevLoading) {
                   return widget.loading;
                 } else if (state is DevLoaded) {
-                  return _buildListDev(context, state.devModel);
+                  return _buildListDev(context, state.devModel, _roles);
                 } else if (state is DevError) {
                   return Container();
                 } else {
@@ -66,42 +91,85 @@ class _DevScreenState extends State<DevScreen> {
   }
 }
 
-Widget _buildListDev(BuildContext context, List<DevModel> model) {
+Widget _buildListDev(BuildContext context, List<DevModel> model,
+    List<Map<String, dynamic>> roles) {
   return Column(
     children: [
       const Padding(
         padding: EdgeInsets.all(8.0),
         child: Text('Desenvolvedores:',
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
       ),
       Expanded(
-        child: SizedBox(
-          height: 150.0,
-          child: ListView.builder(
-            itemCount: model.length,
-            itemBuilder: (context, index) {
-              return Card(
-                child: Container(
-                  margin: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text("${model[index].id} - ${model[index].name}")
-                    ],
+        child: Container(
+          margin: const EdgeInsets.only(left: 15, right: 15),
+          child: SizedBox(
+            height: 150.0,
+            child: ListView.builder(
+              itemCount: model.length,
+              itemBuilder: (context, index) {
+                return CustomTooltip(
+                  message: roles[index]['title'],
+                  child: Card(
+                    elevation: 2,
+                    child: Container(
+                      margin: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          CircleAvatar(
+                            child: Image.asset(
+                              roles[index]['img'],
+                              height: 100,
+                              fit: BoxFit.fitHeight,
+                            ),
+                            radius: 30,
+                          ),
+                          Text(
+                            "${model[index].name}",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 26),
+                          ),
+                          Row(
+                            children: roles[index]['techs']
+                                .map<Widget>((tech) =>
+                                    Image.asset(tech, height: 40, width: 40))
+                                .toList(),
+                          )
+                          // Row(
+                          //     children: roles[index]['techs']
+                          //         .map((String tech, index) => Text(tech))
+                          //         .toList()),
+
+                          // roles[index]['techs']
+                          //     .map((tech) => Text(tech))
+                          //     .toList()
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
-      ElevatedButton(
-          onPressed: () => print('Vou pra tela de cadastro!'),
+      Container(
+        margin: const EdgeInsets.only(bottom: 5),
+        child: ElevatedButton(
+          onPressed: () => print('Tela de cadastro :)'),
           child: const Icon(Icons.add),
           style: ButtonStyle(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          )))),
+            padding:
+                MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(10)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+            ),
+          ),
+        ),
+      ),
     ],
   );
 }

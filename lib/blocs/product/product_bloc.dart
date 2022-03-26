@@ -69,7 +69,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         var products = await _apiRepository.fetchProductList();
         emit(ProductLoaded(products));
       } catch (msg) {
-        emit(ProductError('Erro ao cadastrar produto: $msg'));
+        emit(ProductError('Erro ao atualizar produto: $msg'));
       }
     });
 
