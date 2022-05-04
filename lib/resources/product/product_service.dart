@@ -3,16 +3,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:mylife/models/product.dart';
+import 'package:mylife/resources/product/product_repository.dart';
 
-import '../models/dev.dart';
-import 'api_provider.dart';
-
-class ApiRepository {
-  final _provider = ApiProvider();
-
-  Future<List<DevModel>> fetchDevList() {
-    return _provider.fetchDevList();
-  }
+class ProductService {
+  final _provider = ProductRepository();
 
   Future<List<ProductModel>> fetchProductList() async {
     return await _provider.fetchProductList();

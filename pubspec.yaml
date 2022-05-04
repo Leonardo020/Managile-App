@@ -78,6 +78,7 @@ flutter:
     - assets/icons/database.png
     - assets/icons/figma.png
     - assets/icons/bootstrap.png
+    - assets/img/logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

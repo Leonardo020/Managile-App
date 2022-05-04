@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylife/blocs/product/product_bloc.dart';
 import 'package:mylife/pages/devs/devs_screen.dart';
+import 'package:mylife/pages/login/login_screen.dart';
 import 'package:mylife/pages/navigator_home.dart';
 import 'package:mylife/pages/products/register/product_register.dart';
+import 'package:mylife/pages/users/register/user_register_screen.dart';
 import 'package:mylife/routes/app_routes.dart';
 
 import 'pages/products/products_screen.dart';
@@ -24,6 +26,7 @@ class MyApp extends StatelessWidget {
     Widget _buildLoading() => const Center(child: CircularProgressIndicator());
     return MaterialApp(
         title: 'My Life',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.indigo,
           fontFamily: 'SmoochSans',
@@ -36,7 +39,9 @@ class MyApp extends StatelessWidget {
         routes: {
           AppRoutes.DEVS: (ctx) => DevScreen(loading: _buildLoading()),
           AppRoutes.PRODUCTS: (ctx) => ProductScreen(loading: _buildLoading()),
-          AppRoutes.REGISTER_PRODUCTS: (ctx) => const ProductRegisterScreen()
+          AppRoutes.REGISTER_PRODUCTS: (ctx) => const ProductRegisterScreen(),
+          AppRoutes.REGISTER_USER: (ctx) => const UserRegisterScreen(),
+          AppRoutes.LOGIN: (ctx) => const LoginScreen(),
         });
   }
 }

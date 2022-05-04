@@ -3,18 +3,19 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mylife/models/product.dart';
-import 'package:mylife/resources/api_repository.dart';
+
+import '../../resources/product/product_service.dart';
 part 'product_event.dart';
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ProductBloc() : super(ProductInitial()) {
-    final ApiRepository _apiRepository = ApiRepository();
+    final ProductService productService = ProductService();
 
     on<GetProductListEvent>((event, emit) async {
       try {
         emit(ProductLoading());
-        var products = await _apiRepository.fetchProductList();
+        var products = await productService.fetchProductList();
         emit(ProductLoaded(products));
       } catch (msg) {
         emit(ProductError("Erro ao carregar produtos: $msg"));
@@ -27,7 +28,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           emit(ProductSingleLoaded(ProductModel()));
         } else {
           emit(ProductLoading());
-          var product = await _apiRepository.fetchDetailProduct(event.id!);
+          var product = await productService.fetchDetailProduct(event.id!);
           emit(ProductSingleLoaded(product));
         }
       } catch (msg) {
@@ -39,13 +40,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       try {
         emit(ProductProcessLoading());
         ProductModel product =
-            await _apiRepository.createProduct(event.productModel!);
+            await productService.createProduct(event.productModel!);
 
         if (event.image != null) {
-          await _apiRepository.addImageProduct(event.image!, product.id!);
+          await productService.addImageProduct(event.image!, product.id!);
         }
 
-        var products = await _apiRepository.fetchProductList();
+        var products = await productService.fetchProductList();
         emit(ProductLoaded(products));
       } catch (msg) {
         emit(ProductError('Erro ao cadastrar produto: $msg'));
@@ -56,17 +57,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       try {
         emit(ProductProcessLoading());
 
-        await _apiRepository.updateProduct(event.productModel, event.id);
+        await productService.updateProduct(event.productModel, event.id);
 
         if (event.image != null) {
-          await _apiRepository.addImageProduct(event.image!, event.id);
+          await productService.addImageProduct(event.image!, event.id);
         }
 
         // else if(event.image!.path == ''){
-        //   await _apiRepository.removeImageProduct(event.id);
+        //   await productService.removeImageProduct(event.id);
         // }
 
-        var products = await _apiRepository.fetchProductList();
+        var products = await productService.fetchProductList();
         emit(ProductLoaded(products));
       } catch (msg) {
         emit(ProductError('Erro ao atualizar produto: $msg'));
@@ -78,7 +79,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         final products = (state as ProductLoaded).productsModel;
         if (state is ProductLoaded) {
           emit(ProductLoading());
-          await _apiRepository
+          await productService
               .deleteProduct(int.parse(event.productModel.id.toString()));
           final deleteProduct = products
               .where((productModel) => productModel.id != event.productModel.id)

@@ -4,31 +4,12 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:mylife/models/product.dart';
-import 'package:mylife/models/dev.dart';
+import 'package:mylife/resources/base_repository.dart';
 
-class ApiProvider {
-  final Dio _dio = Dio();
-  final String _url = 'https://fefa-modaintima.herokuapp.com/api';
-
-  Future<List<DevModel>> fetchDevList() async {
-    try {
-      Response response = await _dio.get(_url + '/dev');
-      var array = jsonDecode(response.data) as List;
-      var devs = List<DevModel>.empty();
-      if (array.isNotEmpty) {
-        devs = (array).map((data) => DevModel.fromJson(data)).toList();
-      }
-      return devs;
-    } catch (error, stacktrace) {
-      print("Exception occured: $error stackTrace: $stacktrace");
-
-      throw Exception(error);
-    }
-  }
-
+class ProductRepository extends BaseRepository {
   Future<List<ProductModel>> fetchProductList() async {
     try {
-      Response response = await _dio.get(_url + '/product');
+      Response response = await dio.get(url[env]! + '/product');
       var array = jsonDecode(response.data) as List;
       var product = List<ProductModel>.empty();
       if (array.isNotEmpty) {
@@ -44,7 +25,7 @@ class ApiProvider {
 
   Future<ProductModel> fetchDetailProduct(int id) async {
     try {
-      Response response = await _dio.get(_url + '/product/$id');
+      Response response = await dio.get(url[env]! + '/product/$id');
       ProductModel product = ProductModel.fromJson(response.data);
       return product;
     } catch (error, stacktrace) {
@@ -56,7 +37,7 @@ class ApiProvider {
   Future<ProductModel> createProduct(ProductModel model) async {
     try {
       Response response =
-          await _dio.post(_url + '/product/register', data: model.toJson());
+          await dio.post(url[env]! + '/product/register', data: model.toJson());
       ProductModel product = ProductModel.fromJson(response.data['data']);
       return product;
     } catch (error, stacktrace) {
@@ -67,7 +48,7 @@ class ApiProvider {
 
   Future<void> updateProduct(ProductModel model, int id) async {
     try {
-      await _dio.put(_url + '/product/update/$id', data: model.toJson());
+      await dio.put(url[env]! + '/product/update/$id', data: model.toJson());
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);
@@ -76,7 +57,7 @@ class ApiProvider {
 
   Future<void> deleteProduct(id) async {
     try {
-      await _dio.delete(_url + '/product/delete/$id');
+      await dio.delete(url[env]! + '/product/delete/$id');
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);
@@ -85,8 +66,8 @@ class ApiProvider {
 
   Future<void> addImageProduct(FormData formData, int id) async {
     try {
-      await _dio.post(
-        _url + '/product/addImage/$id',
+      await dio.post(
+        url[env]! + '/product/addImage/$id',
         data: formData,
       );
     } catch (error, stacktrace) {
