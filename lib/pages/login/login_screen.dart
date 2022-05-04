@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                Color.fromRGBO(252, 253, 239, 1),
+                Color.fromRGBO(255, 253, 239, 1),
                 Color.fromRGBO(252, 253, 239, 1),
                 Color.fromRGBO(254, 255, 246, 0.8),
               ],
@@ -45,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color.fromRGBO(188, 186, 186, 1)),
                       ),
                       hintText: 'E-mail',
+                      labelText: 'E-mail',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0)),
                       hintStyle: TextStyle(color: Colors.grey[800]),
@@ -55,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ))),
               const SizedBox(height: 30),
               TextField(
+                  obscureText: true,
                   decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -62,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Color.fromRGBO(188, 186, 186, 1)),
                       ),
                       hintText: 'Senha',
+                      labelText: 'Senha',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -93,7 +96,26 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(10.0)),
                 child: const Text('Cadastrar', style: TextStyle(fontSize: 26)),
                 onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
-                    AppRoutes.REGISTER_USER,
+                    AppRoutes.USER_REGISTER,
+                    ModalRoute.withName(AppRoutes.LOGIN)),
+              ),
+              const SizedBox(height: 30),
+              MaterialButton(
+                padding: const EdgeInsets.all(10),
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(
+                        color: Color.fromRGBO(188, 186, 186, 1)),
+                    borderRadius: BorderRadius.circular(10.0)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.account_circle),
+                    SizedBox(width: 10),
+                    Text('Usuário', style: TextStyle(fontSize: 26)),
+                  ],
+                ),
+                onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.USER_DETAIL,
                     ModalRoute.withName(AppRoutes.LOGIN)),
               ),
             ],

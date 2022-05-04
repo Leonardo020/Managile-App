@@ -257,7 +257,7 @@ Widget _buildListProducts(BuildContext context, List<ProductModel> model) {
           margin: const EdgeInsets.only(bottom: 5),
           child: ElevatedButton(
             onPressed: () =>
-                Navigator.of(context).pushNamed(AppRoutes.REGISTER_PRODUCTS),
+                Navigator.of(context).pushNamed(AppRoutes.PRODUCTS_REGISTER),
             child: const Icon(Icons.add),
             style: ButtonStyle(
               padding: MaterialStateProperty.all<EdgeInsets>(
