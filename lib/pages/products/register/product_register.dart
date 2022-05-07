@@ -7,9 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mylife/blocs/product/product_bloc.dart';
-import 'package:mylife/components/custom_app_bar.dart';
 import 'package:mylife/models/product.dart';
-import 'package:mylife/resources/utils/img_url_to_file.dart';
+import 'package:mylife/pages/components/custom_app_bar.dart';
+import 'package:mylife/service/utils/img_url_to_file.dart';
 import 'package:mylife/routes/app_routes.dart';
 
 enum FieldError { Empty, Invalid }

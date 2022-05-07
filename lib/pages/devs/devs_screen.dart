@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mylife/blocs/dev/dev_bloc.dart';
-import 'package:mylife/components/custom_app_bar.dart';
-import 'package:mylife/components/custom_tooltip.dart';
 import 'package:mylife/models/dev.dart';
+import 'package:mylife/pages/components/custom_app_bar.dart';
+import 'package:mylife/pages/components/custom_scaffold_messenger.dart';
+import 'package:mylife/pages/components/custom_tooltip.dart';
 
 class DevScreen extends StatefulWidget {
   final Widget loading;
@@ -65,8 +66,7 @@ class _DevScreenState extends State<DevScreen> {
             listener: (context, state) {
               if (state is DevError) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message!)),
-                );
+                    ErrorScaffoldMessenger.showErrorSnackBar(state.message!));
               }
             },
             child: BlocBuilder<DevBloc, DevState>(

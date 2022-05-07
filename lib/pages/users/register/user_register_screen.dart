@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mylife/routes/app_routes.dart';
 
 class UserRegisterScreen extends StatefulWidget {
@@ -9,6 +10,8 @@ class UserRegisterScreen extends StatefulWidget {
 }
 
 class _UserRegisterScreenState extends State<UserRegisterScreen> {
+  TextEditingController dateController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,6 +85,68 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                       Icons.mail,
                       size: 30,
                     ))),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: TextField(
+                      decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Color.fromRGBO(188, 186, 186, 1)),
+                          ),
+                          hintText: 'Sexo',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          hintStyle: TextStyle(color: Colors.grey[800]),
+                          fillColor: Colors.white70,
+                          prefixIcon: const Icon(
+                            Icons.person,
+                            size: 30,
+                          ))),
+                ),
+                const SizedBox(width: 15),
+                Flexible(
+                  child: TextField(
+                      controller: dateController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Color.fromRGBO(188, 186, 186, 1)),
+                          ),
+                          hintText: 'Dt.Nasc',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          hintStyle: TextStyle(color: Colors.grey[800]),
+                          fillColor: Colors.white70,
+                          prefixIcon: const Icon(
+                            Icons.calendar_month,
+                            size: 30,
+                          )),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime(2101));
+                        if (pickedDate != null) {
+                          String formattedDate =
+                              DateFormat('dd/MM/yyyy').format(pickedDate);
+                          setState(() {
+                            dateController.text =
+                                formattedDate; //set output date to TextField value.
+                          });
+                        }
+                      }),
+                ),
+              ],
+            ),
             const SizedBox(height: 30),
             TextField(
                 decoration: InputDecoration(

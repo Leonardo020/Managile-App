@@ -29,24 +29,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      toolbarHeight: 70,
+      toolbarHeight: 130,
+      foregroundColor: Colors.white,
       title: Text(widget.title),
       centerTitle: true,
       flexibleSpace: Container(
         decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20)),
             gradient: LinearGradient(
                 colors: [Colors.blue[700]!, Colors.indigo],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter)),
       ),
-      actions: [
-        widget.save != null
-            ? IconButton(onPressed: widget.save, icon: const Icon(Icons.save))
-            : Container()
-      ],
+      // actions: [
+      //   widget.save != null
+      //       ? IconButton(onPressed: widget.save, icon: const Icon(Icons.save))
+      //       : Container()
+      // ],
     );
   }
 }

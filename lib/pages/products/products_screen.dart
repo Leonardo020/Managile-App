@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mylife/blocs/product/product_bloc.dart';
-import 'package:mylife/components/custom_app_bar.dart';
 import 'package:mylife/models/product.dart';
+import 'package:mylife/pages/components/custom_app_bar.dart';
 import 'package:mylife/pages/products/register/product_register.dart';
 import 'package:mylife/routes/app_routes.dart';
 
@@ -50,14 +50,10 @@ class _ProductScreenState extends State<ProductScreen> {
               },
               child: BlocBuilder<ProductBloc, ProductState>(
                 builder: (context, state) {
-                  if (state is ProductInitial) {
-                    return widget.loading;
-                  } else if (state is ProductLoading) {
+                  if (state is ProductInitial || state is ProductLoading) {
                     return widget.loading;
                   } else if (state is ProductLoaded) {
                     return _buildListProducts(context, state.productsModel);
-                  } else if (state is ProductError) {
-                    return Container();
                   } else {
                     return Container();
                   }

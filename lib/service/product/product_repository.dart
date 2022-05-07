@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:mylife/models/product.dart';
-import 'package:mylife/resources/base_repository.dart';
+import 'package:mylife/service/base_repository.dart';
 
 class ProductRepository extends BaseRepository {
   Future<List<ProductModel>> fetchProductList() async {

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:mylife/models/product.dart';
-import 'package:mylife/resources/product/product_repository.dart';
+import 'package:mylife/service/product/product_repository.dart';
 
 class ProductService {
   final _provider = ProductRepository();

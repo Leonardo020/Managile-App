@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mylife/models/product.dart';
 
-import '../../resources/product/product_service.dart';
+import '../../service/product/product_service.dart';
 part 'product_event.dart';
 part 'product_state.dart';
 
