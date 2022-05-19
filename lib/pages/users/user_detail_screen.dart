@@ -28,7 +28,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         listener: (context, state) {
           if (state is UserError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message!)),
             );
           }
         },
@@ -64,11 +64,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                                     color: Color.fromRGBO(169, 169, 169, 1),
                                     size: 30,
                                   ),
-                                  const SizedBox(width: 10),
+                                  const SizedBox(width: 15),
                                   Flexible(
                                     child: Text(state.user.role!.description!,
-                                        textAlign: TextAlign.left,
+                                        textAlign: TextAlign.center,
                                         style: const TextStyle(
+                                            fontSize: 24,
                                             color: Color.fromRGBO(
                                                 169, 169, 169, 1))),
                                   )
@@ -138,62 +139,7 @@ Widget _buildAuthUser(context, UserModel user) {
                 hintStyle: TextStyle(color: Colors.grey[800]),
                 fillColor: Colors.white70,
               )),
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: TextField(
-                    readOnly: true,
-                    textAlign: TextAlign.center,
-                    controller: TextEditingController(text: "Feminino"),
-                    style: const TextStyle(
-                      color: Color.fromRGBO(188, 186, 186, 1),
-                    ),
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(188, 186, 186, 1)),
-                      ),
-                      hintText: 'Sexo',
-                      labelText: 'Sexo',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      hintStyle: TextStyle(color: Colors.grey[800]),
-                      fillColor: Colors.white70,
-                    )),
-              ),
-              const SizedBox(width: 20),
-              Flexible(
-                child: TextField(
-                  readOnly: true,
-                  textAlign: TextAlign.center,
-                  controller: TextEditingController(text: "30/06/1983"),
-                  style: const TextStyle(
-                    color: Color.fromRGBO(188, 186, 186, 1),
-                  ),
-                  decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(188, 186, 186, 1)),
-                    ),
-                    hintText: 'Dt. Nasc',
-                    labelText: 'Dt. Nasc',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 45),
           MaterialButton(
             padding: const EdgeInsets.all(10),
             child: Row(
@@ -208,7 +154,7 @@ Widget _buildAuthUser(context, UserModel user) {
                         color: Color.fromARGB(255, 157, 156, 156)))
               ],
             ),
-            onPressed: () => print("Cadastrando..."),
+            onPressed: () => print("Alterando..."),
           ),
         ],
       ),

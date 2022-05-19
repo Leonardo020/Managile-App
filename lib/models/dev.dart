@@ -1,9 +1,10 @@
-class DevModel {
+import 'package:mylife/models/base/base.dart';
+
+class DevModel extends BaseModel {
   int? id;
   String? name;
   DateTime? createdAt;
   DateTime? updatedAt;
-  String? error;
 
   DevModel({this.id, this.name, this.createdAt, this.updatedAt});
 
@@ -14,8 +15,8 @@ class DevModel {
   DevModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    createdAt = DateTime.parse(json['created_at']);
-    updatedAt = DateTime.parse(json['updated_at']);
+    createdAt = DateTime.parse(json['created_at']).toLocal();
+    updatedAt = DateTime.parse(json['updated_at']).toLocal();
   }
 
   Map<String, dynamic> toJson() {

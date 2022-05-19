@@ -5,7 +5,7 @@ import 'package:mylife/routes/app_routes.dart';
 List<Map<String, dynamic>> screens = [
   {
     'title': 'Devs',
-    'icon': FontAwesomeIcons.laptopCode,
+    'icon': Icons.code,
     'screen': AppRoutes.DEVS,
   },
   {
@@ -36,5 +36,11 @@ List<Map<String, dynamic>> screens = [
     'icon': Icons.account_circle,
     'iconColor': Colors.black,
     'screen': AppRoutes.USER_DETAIL,
+  },
+  {
+    'title': 'Sair',
+    'icon': Icons.power_settings_new,
+    'iconColor': Colors.black,
+    'screen': AppRoutes.LOGIN,
   }
 ];

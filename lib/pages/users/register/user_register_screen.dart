@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mylife/blocs/auth/user/user_bloc.dart';
+import 'package:mylife/models/auth/user.dart';
+import 'package:mylife/pages/components/custom_scaffold_messenger.dart';
 import 'package:mylife/routes/app_routes.dart';
+import 'package:mylife/service/utils/secure_storage.dart';
 
 class UserRegisterScreen extends StatefulWidget {
   const UserRegisterScreen({Key? key}) : super(key: key);
@@ -10,190 +14,191 @@ class UserRegisterScreen extends StatefulWidget {
 }
 
 class _UserRegisterScreenState extends State<UserRegisterScreen> {
-  TextEditingController dateController = TextEditingController();
+  late UserBloc _userBloc;
+
+  final _nameController = TextEditingController(),
+      _emailController = TextEditingController(),
+      _passwordController = TextEditingController(),
+      _passwordConfirmationController = TextEditingController();
+
+  @override
+  void initState() {
+    _userBloc = UserBloc();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _userBloc.close();
+    super.dispose();
+  }
+
+  saveUser() {
+    _userBloc.add(RegisterUserEvent(UserModel(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text)));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
       backgroundColor: const Color.fromRGBO(252, 253, 239, 1),
-      body: Padding(
-        padding: const EdgeInsets.only(right: 15, left: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, size: 35),
-                  onPressed: () => Navigator.of(context)
-                      .pushNamedAndRemoveUntil(AppRoutes.LOGIN,
-                          ModalRoute.withName(AppRoutes.USER_REGISTER)),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 20),
-                  child: Text('Começando!',
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 35, fontWeight: FontWeight.w600)),
-                ),
-                Container()
-              ],
-            ),
-            const SizedBox(height: 35),
-            const Text(
-              "Insira suas principais informações para iniciarmos nossa gestão!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  color: Color.fromRGBO(122, 120, 120, 1)),
-            ),
-            const SizedBox(height: 35),
-            TextField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(188, 186, 186, 1)),
-                    ),
-                    hintText: 'Nome',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                    fillColor: Colors.white70,
-                    prefixIcon: const Icon(
-                      Icons.account_circle,
-                      size: 30,
-                    ))),
-            const SizedBox(height: 30),
-            TextField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(188, 186, 186, 1)),
-                    ),
-                    hintText: 'E-mail',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                    fillColor: Colors.white70,
-                    prefixIcon: const Icon(
-                      Icons.mail,
-                      size: 30,
-                    ))),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: TextField(
+      resizeToAvoidBottomInset: false,
+      body: BlocProvider(
+        create: (BuildContext context) => _userBloc,
+        child: BlocListener<UserBloc, UserState>(
+          listener: (context, state) async {
+            if (state is UserError) {
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(
+                    ErrorScaffoldMessenger.showErrorSnackBar(state.message!));
+            }
+
+            if (state is UserSingleLoaded) {
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context)
+                ..removeCurrentSnackBar()
+                ..showSnackBar(const SnackBar(
+                    content: Text(
+                        'Sucesso ao cadastrar! Logue com o respectivo usuário agora.',
+                        style: TextStyle(fontSize: 17),
+                        textAlign: TextAlign.center),
+                    backgroundColor: Color.fromARGB(255, 77, 159, 80)));
+            }
+          },
+          child: BlocBuilder<UserBloc, UserState>(builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 15, left: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 50),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back, size: 35),
+                        onPressed: () => Navigator.of(context)
+                            .pushNamedAndRemoveUntil(AppRoutes.LOGIN,
+                                ModalRoute.withName(AppRoutes.USER_REGISTER)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 20),
+                        child: Text('Começando!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 35, fontWeight: FontWeight.w600)),
+                      ),
+                      Container()
+                    ],
+                  ),
+                  const SizedBox(height: 35),
+                  const Text(
+                    "Insira suas principais informações para iniciarmos nossa gestão!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(122, 120, 120, 1)),
+                  ),
+                  const SizedBox(height: 35),
+                  TextField(
+                      controller: _nameController,
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             borderSide: const BorderSide(
                                 color: Color.fromRGBO(188, 186, 186, 1)),
                           ),
-                          hintText: 'Sexo',
+                          hintText: 'Nome',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+                              borderRadius: BorderRadius.circular(10.0)),
                           hintStyle: TextStyle(color: Colors.grey[800]),
                           fillColor: Colors.white70,
                           prefixIcon: const Icon(
-                            Icons.person,
+                            Icons.account_circle,
                             size: 30,
                           ))),
-                ),
-                const SizedBox(width: 15),
-                Flexible(
-                  child: TextField(
-                      controller: dateController,
-                      readOnly: true,
+                  const SizedBox(height: 30),
+                  TextField(
+                      controller: _emailController,
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                             borderSide: const BorderSide(
                                 color: Color.fromRGBO(188, 186, 186, 1)),
                           ),
-                          hintText: 'Dt.Nasc',
+                          hintText: 'E-mail',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           hintStyle: TextStyle(color: Colors.grey[800]),
                           fillColor: Colors.white70,
                           prefixIcon: const Icon(
-                            Icons.calendar_month,
+                            Icons.mail,
                             size: 30,
-                          )),
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1950),
-                            lastDate: DateTime(2101));
-                        if (pickedDate != null) {
-                          String formattedDate =
-                              DateFormat('dd/MM/yyyy').format(pickedDate);
-                          setState(() {
-                            dateController.text =
-                                formattedDate; //set output date to TextField value.
-                          });
-                        }
-                      }),
-                ),
-              ],
-            ),
-            const SizedBox(height: 30),
-            TextField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(188, 186, 186, 1)),
-                    ),
-                    hintText: 'Senha',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                    fillColor: Colors.white70,
-                    prefixIcon: const Icon(
-                      Icons.vpn_key,
-                      size: 30,
-                    ))),
-            const SizedBox(height: 30),
-            TextField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(188, 186, 186, 1)),
-                    ),
-                    hintText: 'Confirmar Senha',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    hintStyle: TextStyle(color: Colors.grey[800]),
-                    fillColor: Colors.white70,
-                    prefixIcon: const Icon(
-                      Icons.check_circle,
-                      size: 30,
-                    ))),
-            const SizedBox(height: 30),
-            MaterialButton(
-              padding: const EdgeInsets.all(10),
-              shape: RoundedRectangleBorder(
-                  side:
-                      const BorderSide(color: Color.fromRGBO(188, 186, 186, 1)),
-                  borderRadius: BorderRadius.circular(10.0)),
-              child: const Text('Cadastrar', style: TextStyle(fontSize: 26)),
-              onPressed: () => print("Cadastrando..."),
-            )
-          ],
+                          ))),
+                  const SizedBox(height: 30),
+                  TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Color.fromRGBO(188, 186, 186, 1)),
+                          ),
+                          hintText: 'Senha',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          hintStyle: TextStyle(color: Colors.grey[800]),
+                          fillColor: Colors.white70,
+                          prefixIcon: const Icon(
+                            Icons.vpn_key,
+                            size: 30,
+                          ))),
+                  const SizedBox(height: 30),
+                  TextField(
+                      controller: _passwordConfirmationController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Color.fromRGBO(188, 186, 186, 1)),
+                          ),
+                          hintText: 'Confirmar Senha',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          hintStyle: TextStyle(color: Colors.grey[800]),
+                          fillColor: Colors.white70,
+                          prefixIcon: const Icon(
+                            Icons.check_circle,
+                            size: 30,
+                          ))),
+                  const SizedBox(height: 30),
+                  MaterialButton(
+                    padding: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                        side: const BorderSide(
+                            color: Color.fromRGBO(188, 186, 186, 1)),
+                        borderRadius: BorderRadius.circular(10.0)),
+                    child:
+                        const Text('Cadastrar', style: TextStyle(fontSize: 26)),
+                    onPressed: () => saveUser(),
+                  )
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );

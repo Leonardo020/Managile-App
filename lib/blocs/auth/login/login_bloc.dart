@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:mylife/models/auth/auth_token.dart';
 import 'package:mylife/service/auth/login/login_service.dart';
 
 part 'login_event.dart';
@@ -14,9 +14,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<AttemptLoginEvent>((event, emit) async {
       try {
         emit(LoginProcessLoading());
-        String token =
+        AuthTokenModel authTokenModel =
             await loginService.attemptLogin(event.email, event.password);
-        emit(LoginLoaded(token));
+        if (authTokenModel.error != null) {
+          emit(LoginError(authTokenModel.error));
+        }
+        emit(LoginLoaded(authTokenModel));
       } catch (msg) {
         emit(LoginError('Erro ao realizar login: $msg'));
       }

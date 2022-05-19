@@ -7,6 +7,10 @@ class UserService {
   Future<UserModel> getAuthUser() {
     return _repository.getAuthUser();
   }
+
+  Future<UserModel> registerUser(UserModel model) {
+    return _repository.registerUser(model);
+  }
 }
 
 class NetworkError extends Error {}

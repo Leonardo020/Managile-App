@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate
         ],
         supportedLocales: const [Locale('pt', 'BR')],
-        home: const LoginScreen(),
+        home: const NavigatorHome(),
         routes: {
           AppRoutes.LOGIN: (ctx) => const LoginScreen(),
           AppRoutes.HOME: (ctx) => const NavigatorHome(),

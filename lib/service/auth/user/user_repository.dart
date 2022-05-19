@@ -7,10 +7,24 @@ class UserRepository extends BaseRepository {
     try {
       await checkToken();
       Response response = await dio.get(url[env]! + '/user');
-      if (response.statusCode != 200) {
-        return UserModel.withError(response.data['msg']);
-      }
-      return UserModel.fromJson(response.data);
+
+      return response.statusCode != 200
+          ? UserModel.withError(response.data['msg'])
+          : UserModel.fromJson(response.data);
+    } catch (error, stacktrace) {
+      print("Exception occured: $error stackTrace: $stacktrace");
+      throw Exception(error);
+    }
+  }
+
+  Future<UserModel> registerUser(UserModel model) async {
+    try {
+      Response response =
+          await dio.post(url[env]! + '/auth/user', data: model.toJson());
+
+      return response.statusCode != 200
+          ? UserModel.withError(response.data['message'])
+          : UserModel.fromJson(response.data['data']);
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);

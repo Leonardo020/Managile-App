@@ -36,7 +36,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       flexibleSpace: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                colors: [Colors.blue[700]!, Colors.indigo],
+                colors: [Colors.blue[800]!, Colors.indigo],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter)),
       ),

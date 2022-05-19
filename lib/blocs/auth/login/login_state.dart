@@ -1,36 +1,28 @@
 part of 'login_bloc.dart';
 
-@immutable
-abstract class LoginState extends Equatable {}
+abstract class LoginState extends Equatable {
+  const LoginState();
 
-class LoginInitial extends LoginState {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class LoginLoading extends LoginState {
-  @override
-  List<Object> get props => [];
-}
+class LoginInitial extends LoginState {}
 
-class LoginProcessLoading extends LoginState {
-  @override
-  List<Object> get props => [];
-}
+class LoginLoading extends LoginState {}
+
+class LoginProcessLoading extends LoginState {}
 
 class LoginLoaded extends LoginState {
-  final String token;
+  final AuthTokenModel authTokenModel;
 
-  LoginLoaded(this.token);
+  const LoginLoaded(this.authTokenModel);
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => [authTokenModel];
 }
 
 class LoginError extends LoginState {
-  final String message;
-  LoginError(this.message);
-
-  @override
-  List<Object> get props => [message];
+  final String? message;
+  const LoginError(this.message);
 }

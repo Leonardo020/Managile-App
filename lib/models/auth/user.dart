@@ -1,21 +1,20 @@
 import 'package:mylife/models/auth/role.dart';
+import 'package:mylife/models/base/base.dart';
 
-class UserModel {
+class UserModel extends BaseModel {
   int? id;
   String? name;
   String? email;
-  String? gender;
-  DateTime? birthDate;
-  String? error;
+  String? password;
+  String? passwordConfirmation;
   RoleModel? role;
 
   UserModel(
       {this.id,
       this.name,
-      this.gender,
+      this.password,
       this.email,
-      this.birthDate,
-      this.error});
+      this.passwordConfirmation});
 
   UserModel.withError(String errorMessage) {
     error = errorMessage;
@@ -25,17 +24,16 @@ class UserModel {
     id = json['id'];
     name = json['user_name'];
     email = json['email'];
-    gender = json['gender'];
-    birthDate = json['birth_date'];
     role = RoleModel.fromJson(json['role']);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
+    data['user_name'] = name;
     data['email'] = email;
-    data['gender'] = gender;
-    data['birth_date'] = birthDate;
+    data['password'] = password;
+    data['password_confirmation'] = passwordConfirmation;
+    data['type'] = "app";
 
     return data;
   }

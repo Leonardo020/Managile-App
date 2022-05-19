@@ -49,12 +49,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (state is LoginError) {
                   ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
-                      ErrorScaffoldMessenger.showErrorSnackBar(
-                          "Usuário ou senha incorretos :("));
+                      ErrorScaffoldMessenger.showErrorSnackBar(state.message!));
                 }
 
                 if (state is LoginLoaded) {
-                  SecureStorage().writeSecureData("jwt", state.token);
+                  SecureStorage()
+                      .writeSecureData("jwt", state.authTokenModel.token!);
                   final token = await SecureStorage().jwtOrEmpty;
                   if (token.isNotEmpty) {
                     Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
@@ -77,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextField(
                             controller: _emailController,
+                            textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -154,25 +155,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(fontSize: 26)),
                           onPressed: () => Navigator.of(context)
                               .pushNamedAndRemoveUntil(AppRoutes.USER_REGISTER,
-                                  ModalRoute.withName(AppRoutes.LOGIN)),
-                        ),
-                        const SizedBox(height: 30),
-                        MaterialButton(
-                          padding: const EdgeInsets.all(10),
-                          shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                  color: Color.fromRGBO(188, 186, 186, 1)),
-                              borderRadius: BorderRadius.circular(10.0)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.account_circle),
-                              SizedBox(width: 10),
-                              Text('Usuário', style: TextStyle(fontSize: 26)),
-                            ],
-                          ),
-                          onPressed: () => Navigator.of(context)
-                              .pushNamedAndRemoveUntil(AppRoutes.USER_DETAIL,
                                   ModalRoute.withName(AppRoutes.LOGIN)),
                         ),
                       ],

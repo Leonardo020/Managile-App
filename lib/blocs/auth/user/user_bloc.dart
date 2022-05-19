@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +18,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserSingleLoaded(user));
       } catch (msg) {
         emit(UserError('Erro ao tentar trazer o usuário: $msg'));
+      }
+    });
+
+    on<RegisterUserEvent>((event, emit) async {
+      try {
+        emit(UserLoading());
+        UserModel userModel = await userService.registerUser(event.userModel!);
+        emit(UserSingleLoaded(userModel));
+      } catch (msg) {
+        emit(UserError('Erro ao tentar cadastrar o usuário: $msg'));
       }
     });
   }
