@@ -105,52 +105,54 @@ Widget _buildListDev(BuildContext context, List<DevModel> model,
           margin: const EdgeInsets.only(left: 15, right: 15),
           child: SizedBox(
             height: 150.0,
-            child: ListView.builder(
-              itemCount: model.length,
-              itemBuilder: (context, index) {
-                return CustomTooltip(
-                  message: roles[index]['title'],
-                  child: Card(
-                    elevation: 2,
-                    child: Container(
-                      margin: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          CircleAvatar(
-                            child: Image.asset(
-                              roles[index]['img'],
-                              height: 100,
-                              fit: BoxFit.fitHeight,
-                            ),
-                            radius: 30,
-                          ),
-                          Text(
-                            "${model[index].name}",
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 26),
-                          ),
-                          Row(
-                            children: roles[index]['techs']
-                                .map<Widget>((tech) =>
-                                    Image.asset(tech, height: 40, width: 40))
-                                .toList(),
-                          )
-                          // Row(
-                          //     children: roles[index]['techs']
-                          //         .map((String tech, index) => Text(tech))
-                          //         .toList()),
+            child: model.isNotEmpty
+                ? ListView.builder(
+                    itemCount: model.length,
+                    itemBuilder: (context, index) {
+                      return CustomTooltip(
+                        message: roles[index]['title'],
+                        child: Card(
+                          elevation: 2,
+                          child: Container(
+                            margin: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                CircleAvatar(
+                                  child: Image.asset(
+                                    roles[index]['img'],
+                                    height: 100,
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                  radius: 30,
+                                ),
+                                Text(
+                                  "${model[index].name}",
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 26),
+                                ),
+                                Row(
+                                  children: roles[index]['techs']
+                                      .map<Widget>((tech) => Image.asset(tech,
+                                          height: 40, width: 40))
+                                      .toList(),
+                                )
+                                // Row(
+                                //     children: roles[index]['techs']
+                                //         .map((String tech, index) => Text(tech))
+                                //         .toList()),
 
-                          // roles[index]['techs']
-                          //     .map((tech) => Text(tech))
-                          //     .toList()
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                                // roles[index]['techs']
+                                //     .map((tech) => Text(tech))
+                                //     .toList()
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const Text("Nenhum dev cadastrado :("),
           ),
         ),
       ),

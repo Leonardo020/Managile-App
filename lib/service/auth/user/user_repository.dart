@@ -7,7 +7,6 @@ class UserRepository extends BaseRepository {
     try {
       await checkToken();
       Response response = await dio.get(url[env]! + '/user');
-
       return response.statusCode != 200
           ? UserModel.withError(response.data['msg'])
           : UserModel.fromJson(response.data);

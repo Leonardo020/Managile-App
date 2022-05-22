@@ -82,9 +82,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back, size: 35),
-                        onPressed: () => Navigator.of(context)
-                            .pushNamedAndRemoveUntil(AppRoutes.LOGIN,
-                                ModalRoute.withName(AppRoutes.USER_REGISTER)),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                       const Padding(
                         padding: EdgeInsets.only(right: 20),

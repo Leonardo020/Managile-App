@@ -7,7 +7,6 @@ class AuthTokenModel extends BaseModel {
   AuthTokenModel({this.token, this.expiresIn});
 
   AuthTokenModel.withError(String errorMessage) {
-    print(errorMessage);
     error = errorMessage;
   }
 

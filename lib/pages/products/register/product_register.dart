@@ -1,4 +1,5 @@
-import 'dart:developer';
+// ignore_for_file: constant_identifier_names
+
 import 'dart:io';
 
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';

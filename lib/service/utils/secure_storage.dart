@@ -12,4 +12,14 @@ class SecureStorage {
     if (jwt == null) return "";
     return jwt;
   }
+
+  Future logout() async {
+    await _storage.delete(key: "jwt");
+  }
+
+  Future<String> get expiresDate async {
+    var jwt = await _storage.read(key: "expiration");
+    if (jwt == null) return "";
+    return jwt;
+  }
 }

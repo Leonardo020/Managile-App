@@ -7,15 +7,10 @@ class LoginRepository extends BaseRepository {
     try {
       Response response = await dio.post(url[env]! + '/auth/login',
           data: {"email": email, "password": password},
-          options: Options(
-              headers: {"type": "app"},
-              validateStatus: (status) {
-                return status! < 500;
-              }));
+          options: Options(headers: {"type": "app"}));
       if (response.statusCode != 200) {
         return AuthTokenModel.withError(response.data['message']);
       }
-
       return AuthTokenModel.fromJson(response.data);
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");

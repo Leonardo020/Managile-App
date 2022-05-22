@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mylife/blocs/auth/login/login_bloc.dart';
 import 'package:mylife/pages/components/custom_scaffold_messenger.dart';
+import 'package:mylife/pages/navigator_home.dart';
 import 'package:mylife/service/utils/secure_storage.dart';
 
 import '../../routes/app_routes.dart';
@@ -55,9 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (state is LoginLoaded) {
                   SecureStorage()
                       .writeSecureData("jwt", state.authTokenModel.token!);
+                  SecureStorage().writeSecureData("expiration",
+                      state.authTokenModel.expiresIn!.toIso8601String());
                   final token = await SecureStorage().jwtOrEmpty;
                   if (token.isNotEmpty) {
-                    Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NavigatorHome()));
                   }
                 }
               },
@@ -154,8 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text('Cadastrar',
                               style: TextStyle(fontSize: 26)),
                           onPressed: () => Navigator.of(context)
-                              .pushNamedAndRemoveUntil(AppRoutes.USER_REGISTER,
-                                  ModalRoute.withName(AppRoutes.LOGIN)),
+                              .pushNamed(AppRoutes.USER_REGISTER),
                         ),
                       ],
                     );

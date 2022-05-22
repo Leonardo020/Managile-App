@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mylife/pages/components/screens.dart';
 import 'package:mylife/routes/app_routes.dart';
+import 'package:mylife/service/utils/secure_storage.dart';
 
 class NavigatorHome extends StatefulWidget {
   const NavigatorHome({Key? key}) : super(key: key);
@@ -10,6 +11,16 @@ class NavigatorHome extends StatefulWidget {
 }
 
 class _NavigatorHomeState extends State<NavigatorHome> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void logout() async {
+    await SecureStorage().logout();
+    Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,12 +43,14 @@ class _NavigatorHomeState extends State<NavigatorHome> {
                 children: const [
                   Icon(Icons.home, size: 35, color: Colors.white),
                   SizedBox(width: 10),
-                  Text('Bem-vinda, Bonitona! ;)',
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                      textAlign: TextAlign.center),
+                  Flexible(
+                    child: Text('Bem-vinda, Bonitona! ;)',
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        textAlign: TextAlign.center),
+                  ),
                 ],
               ),
             ),
@@ -73,8 +86,7 @@ class _NavigatorHomeState extends State<NavigatorHome> {
                         return InkWell(
                           onTap: () => {
                             screen['screen'] == AppRoutes.LOGIN
-                                ? Navigator.of(context)
-                                    .pushReplacementNamed(AppRoutes.LOGIN)
+                                ? logout()
                                 : Navigator.of(context)
                                     .pushNamed(screen['screen']),
                           },
