@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mylife/blocs/auth/login/login_bloc.dart';
+import 'package:mylife/models/auth/user.dart';
 import 'package:mylife/pages/components/custom_scaffold_messenger.dart';
 import 'package:mylife/pages/navigator_home.dart';
+import 'package:mylife/routes/app_routes.dart';
 import 'package:mylife/service/utils/secure_storage.dart';
 
-import '../../routes/app_routes.dart';
-
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  final UserModel? credentials;
+  const LoginScreen({Key? key, this.credentials}) : super(key: key);
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -23,7 +24,19 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     _loginBloc = LoginBloc();
+    if (widget.credentials != null) {
+      setState(() {
+        _emailController.text = widget.credentials!.email!;
+        _passwordController.text = widget.credentials!.password!;
+      });
+    }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _loginBloc.close();
+    super.dispose();
   }
 
   @override

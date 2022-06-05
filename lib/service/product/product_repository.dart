@@ -10,12 +10,14 @@ class ProductRepository extends BaseRepository {
   Future<List<ProductModel>> fetchProductList() async {
     try {
       Response response = await dio.get(url[env]! + '/product');
-      var array = jsonDecode(response.data) as List;
-      var product = List<ProductModel>.empty();
-      if (array.isNotEmpty) {
-        product = (array).map((data) => ProductModel.fromJson(data)).toList();
+      var responseProducts = jsonDecode(response.data) as List;
+      var products = List<ProductModel>.empty();
+      if (responseProducts.isNotEmpty) {
+        products = (responseProducts)
+            .map((data) => ProductModel.fromJson(data))
+            .toList();
       }
-      return product;
+      return products;
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
 
@@ -36,8 +38,9 @@ class ProductRepository extends BaseRepository {
 
   Future<ProductModel> createProduct(ProductModel model) async {
     try {
+      await checkToken();
       Response response =
-          await dio.post(url[env]! + '/product/register', data: model.toJson());
+          await dio.post(url[env]! + '/product', data: model.toJson());
       ProductModel product = ProductModel.fromJson(response.data['data']);
       return product;
     } catch (error, stacktrace) {
@@ -48,7 +51,7 @@ class ProductRepository extends BaseRepository {
 
   Future<void> updateProduct(ProductModel model, int id) async {
     try {
-      await dio.put(url[env]! + '/product/update/$id', data: model.toJson());
+      await dio.put(url[env]! + '/product/$id', data: model.toJson());
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);
@@ -57,7 +60,7 @@ class ProductRepository extends BaseRepository {
 
   Future<void> deleteProduct(id) async {
     try {
-      await dio.delete(url[env]! + '/product/delete/$id');
+      await dio.delete(url[env]! + '/product/$id');
     } catch (error, stacktrace) {
       print("Exception occured: $error stackTrace: $stacktrace");
       throw Exception(error);

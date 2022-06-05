@@ -14,11 +14,11 @@ class DevBloc extends Bloc<DevEvent, DevState> {
     on<GetDevList>((event, emit) async {
       try {
         emit(DevLoading());
-        final mList = await _devService.fetchDevList();
-        if (mList.first.error != null) {
-          emit(DevError(mList.first.error));
+        final devs = await _devService.fetchDevList();
+        if (devs.isNotEmpty && devs.first.error != null) {
+          emit(DevError(devs.first.error));
         } else {
-          emit(DevLoaded(mList));
+          emit(DevLoaded(devs));
         }
       } on NetworkError {
         emit(const DevError("Failed to fetch data. Is your device online?"));

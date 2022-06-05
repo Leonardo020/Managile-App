@@ -25,7 +25,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       try {
         emit(UserLoading());
         UserModel userModel = await userService.registerUser(event.userModel!);
-        emit(UserSingleLoaded(userModel));
+        userModel.error != null
+            ? emit(UserError(
+                'Erro ao tentar cadastrar o usuário: ${userModel.error}'))
+            : emit(UserSingleLoaded(userModel));
       } catch (msg) {
         emit(UserError('Erro ao tentar cadastrar o usuário: $msg'));
       }

@@ -13,8 +13,9 @@ class SecureStorage {
     return jwt;
   }
 
-  Future logout() async {
+  Future<void> logout() async {
     await _storage.delete(key: "jwt");
+    await _storage.delete(key: "expiration");
   }
 
   Future<String> get expiresDate async {

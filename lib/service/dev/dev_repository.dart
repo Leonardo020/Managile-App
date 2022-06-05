@@ -9,7 +9,7 @@ class DevRepository extends BaseRepository {
 
       if (response.statusCode != 200) {
         List<DevModel> arrayDevs = [];
-        arrayDevs.add(DevModel.withError("${response.data['msg']}"));
+        arrayDevs.add(DevModel.withError(response.data['msg']));
         return arrayDevs;
       }
 

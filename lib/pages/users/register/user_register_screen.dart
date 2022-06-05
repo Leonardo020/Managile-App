@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mylife/blocs/auth/user/user_bloc.dart';
+import 'package:mylife/main.dart';
 import 'package:mylife/models/auth/user.dart';
 import 'package:mylife/pages/components/custom_scaffold_messenger.dart';
-import 'package:mylife/routes/app_routes.dart';
-import 'package:mylife/service/utils/secure_storage.dart';
+import 'package:mylife/pages/login/login_screen.dart';
 
 class UserRegisterScreen extends StatefulWidget {
   const UserRegisterScreen({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class UserRegisterScreen extends StatefulWidget {
 
 class _UserRegisterScreenState extends State<UserRegisterScreen> {
   late UserBloc _userBloc;
+  bool isPasswordVisible = false;
 
   final _nameController = TextEditingController(),
       _emailController = TextEditingController(),
@@ -59,7 +61,11 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             }
 
             if (state is UserSingleLoaded) {
-              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => LoginScreen(
+                      credentials: UserModel(
+                          email: _emailController.text,
+                          password: _passwordController.text))));
               ScaffoldMessenger.of(context)
                 ..removeCurrentSnackBar()
                 ..showSnackBar(const SnackBar(
@@ -144,7 +150,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   const SizedBox(height: 30),
                   TextField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: isPasswordVisible,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
@@ -161,6 +167,16 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                           prefixIcon: const Icon(
                             Icons.vpn_key,
                             size: 30,
+                          ),
+                          suffixIcon: Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            child: IconButton(
+                                onPressed: () => setState(() {
+                                      isPasswordVisible = !isPasswordVisible;
+                                    }),
+                                icon: isPasswordVisible
+                                    ? const Icon(FontAwesomeIcons.eyeSlash)
+                                    : const Icon(FontAwesomeIcons.eye)),
                           ))),
                   const SizedBox(height: 30),
                   TextField(
@@ -189,8 +205,16 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                         side: const BorderSide(
                             color: Color.fromRGBO(188, 186, 186, 1)),
                         borderRadius: BorderRadius.circular(10.0)),
-                    child:
-                        const Text('Cadastrar', style: TextStyle(fontSize: 26)),
+                    child: state is UserLoading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text('Cadastrando...',
+                                  style: TextStyle(fontSize: 26)),
+                            ],
+                          )
+                        : const Text('Cadastrar',
+                            style: TextStyle(fontSize: 26)),
                     onPressed: () => saveUser(),
                   )
                 ],

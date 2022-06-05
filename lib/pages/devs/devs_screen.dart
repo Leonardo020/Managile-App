@@ -76,7 +76,11 @@ class _DevScreenState extends State<DevScreen> {
                 } else if (state is DevLoading) {
                   return widget.loading;
                 } else if (state is DevLoaded) {
-                  return _buildListDev(context, state.devModel, _roles);
+                  return state.devModel.isNotEmpty
+                      ? _buildListDev(context, state.devModel, _roles)
+                      : const Text("Nenhum dev foi cadastrado :(",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 25));
                 } else if (state is DevError) {
                   return Container();
                 } else {

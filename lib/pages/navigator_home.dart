@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mylife/pages/components/screens.dart';
 import 'package:mylife/routes/app_routes.dart';
-import 'package:mylife/service/utils/secure_storage.dart';
+import 'package:mylife/service/utils/logout.dart';
 
 class NavigatorHome extends StatefulWidget {
   const NavigatorHome({Key? key}) : super(key: key);
@@ -14,11 +14,6 @@ class _NavigatorHomeState extends State<NavigatorHome> {
   @override
   void initState() {
     super.initState();
-  }
-
-  void logout() async {
-    await SecureStorage().logout();
-    Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
   }
 
   @override

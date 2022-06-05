@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mylife/blocs/auth/login/login_bloc.dart';
 import 'package:mylife/blocs/product/product_bloc.dart';
+import 'package:mylife/pages/splash_screen.dart';
 import 'package:mylife/pages/devs/devs_screen.dart';
 import 'package:mylife/pages/login/login_screen.dart';
 import 'package:mylife/pages/navigator_home.dart';
@@ -11,12 +12,11 @@ import 'package:mylife/pages/products/register/product_register.dart';
 import 'package:mylife/pages/users/register/user_register_screen.dart';
 import 'package:mylife/pages/users/user_detail_screen.dart';
 import 'package:mylife/routes/app_routes.dart';
-import 'package:mylife/service/base_repository.dart';
 
 import 'pages/products/products_screen.dart';
 
+Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 const storage = FlutterSecureStorage();
-BaseRepository _repository = BaseRepository();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
@@ -28,28 +28,10 @@ void main() {
   ], child: const MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool? isLoading = true;
-  bool? isAuth;
-  @override
-  void initState() {
-    super.initState();
-    _repository
-        .checkToken()
-        .then((value) => setState(() => {isAuth = value, isLoading = false}));
-  }
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Widget _buildLoading() => const Center(child: CircularProgressIndicator());
     // FlutterNativeSplash.remove();
     return MaterialApp(
         title: 'My Life',
@@ -69,11 +51,7 @@ class _MyAppState extends State<MyApp> {
           GlobalCupertinoLocalizations.delegate
         ],
         supportedLocales: const [Locale('pt', 'BR')],
-        home: isLoading!
-            ? _buildLoading()
-            : isAuth!
-                ? const NavigatorHome()
-                : const LoginScreen(),
+        home: const SplashScreen(),
         routes: {
           AppRoutes.LOGIN: (ctx) => const LoginScreen(),
           AppRoutes.HOME: (ctx) => const NavigatorHome(),

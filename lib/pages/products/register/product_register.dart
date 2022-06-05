@@ -289,14 +289,14 @@ class _ProductRegisterScreenState extends State<ProductRegisterScreen> {
         borderSide: BorderSide(color: Colors.grey, width: 1),
       );
 
-  String _titleErrorText(FieldError? error) {
-    switch (error) {
-      case FieldError.Empty:
-        return 'You need to enter an title address';
-      case FieldError.Invalid:
-        return 'Title address invalid';
-      default:
-        return '';
-    }
-  }
+  // String _titleErrorText(FieldError? error) {
+  //   switch (error) {
+  //     case FieldError.Empty:
+  //       return 'You need to enter an title address';
+  //     case FieldError.Invalid:
+  //       return 'Title address invalid';
+  //     default:
+  //       return '';
+  //   }
+  // }
 }

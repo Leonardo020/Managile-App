@@ -18,21 +18,33 @@ class BaseRepository {
 
   final Map<Env, String> url = {
     Env.PROD: "https://fefa-modaintima.herokuapp.com/api",
-    Env.LOCAL: "http://192.168.1.106:8000/api"
+    Env.LOCAL: "http://192.168.1.107:8000/api"
   };
 
   Future<bool> checkToken() async {
     String? token = await SecureStorage().jwtOrEmpty;
     DateTime? dateExpires =
-        DateTime.parse(await SecureStorage().expiresDate).toLocal();
+        DateTime.tryParse(await SecureStorage().expiresDate);
 
-    if (token.isNotEmpty && DateTime.now().isBefore(dateExpires)) {
+    bool isCheckAuth = token.isNotEmpty &&
+        dateExpires != null &&
+        DateTime.now().isBefore(dateExpires);
+
+    if (isCheckAuth) {
       dio.options.headers.addAll({"Authorization": "Bearer $token"});
-    } else {
-      navigatorKey.currentState?.pushNamed(AppRoutes.LOGIN);
     }
 
-    return token.isNotEmpty;
+    return isCheckAuth;
+  }
+
+  Future<void> redirectPageByAuth() async {
+    bool isAuth = await checkToken();
+
+    Timer(const Duration(seconds: 2), () {
+      isAuth
+          ? navigatorKey.currentState?.pushReplacementNamed(AppRoutes.HOME)
+          : navigatorKey.currentState?.pushReplacementNamed(AppRoutes.LOGIN);
+    });
   }
 }
 

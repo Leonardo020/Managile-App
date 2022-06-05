@@ -21,7 +21,7 @@ class UserRepository extends BaseRepository {
       Response response =
           await dio.post(url[env]! + '/auth/user', data: model.toJson());
 
-      return response.statusCode != 200
+      return response.statusCode != 201
           ? UserModel.withError(response.data['message'])
           : UserModel.fromJson(response.data['data']);
     } catch (error, stacktrace) {

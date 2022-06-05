@@ -12,12 +12,12 @@ class AuthTokenModel extends BaseModel {
 
   AuthTokenModel.fromJson(Map<String, dynamic> json) {
     token = json['token'];
-    expiresIn = DateTime.parse(json['expires_in']);
+    expiresIn = DateTime.parse(json['expires_in']).toLocal();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['role_token'] = token;
+    data['token'] = token;
     data['expires_in'] = expiresIn;
     return data;
   }
